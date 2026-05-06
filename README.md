@@ -1,99 +1,86 @@
+# NYC Subway Route Planner: A* Search
+
+An interactive Python implementation of A* search applied to optimal subway routing in a simplified NYC network. Finds the fastest path between stations using `f(n) = g(n) + h(n)`.
+
+## Overview
+
+Given a weighted graph of stations connected by lines with travel times, A* finds the optimal route by balancing actual cost incurred (`g(n)`) against a heuristic estimate of remaining cost (`h(n)`). The heuristic is a scaled Manhattan distance between station coordinates, calibrated to be admissible (never overestimates), which guarantees the returned path is optimal.
+
+## Network
+
+```
+Stations: Bronx, Harlem, City College, West 4th St,
+          Union Square, Penn Station, Newark, NJ
+```
+
+Travel times range from 5 to 40 minutes. The network includes express routes and multi-hop alternatives for A* to evaluate.
+
+## Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+Requires Python 3.7+.
+
+## Running
+
+```bash
+python nyc_subway_planner.py
+```
+
+## Sample Output
+
+```
 NYC SUBWAY ROUTE PLANNER
-========================
+Using A* Search Algorithm
 
-OVERVIEW
---------
-An interactive Python script that implements A* search to find optimal subway
-routes in a simplified NYC subway network. Demonstrates informed search by
-finding the fastest path between stations using f(n) = g(n) + h(n).
+Available Stations:
+  1. Bronx
+  2. City College
+  3. Harlem
+  4. NJ
+  5. Newark
+  6. Penn Station
+  7. Union Square
+  8. West 4th St
 
+Enter starting station: Bronx
+Enter destination station: NJ
 
-REQUIREMENTS
-------------
-- Python 3.7 or higher
-- networkx library
-- heapq (built-in Python module)
+ROUTE FOUND!
+Path: Bronx -> Harlem -> City College -> Penn Station -> NJ
+Total Travel Time: 50.0 minutes
 
-    pip install networkx
+Detailed Route:
+  1. Bronx -> Harlem (20 min)
+  2. Harlem -> City College (10 min)
+  3. City College -> Penn Station (15 min)
+  4. Penn Station -> NJ (5 min)
 
+Search Statistics:
+  Nodes explored: 5
+  Max frontier size: 3
+```
 
-RUNNING THE PROGRAM
--------------------
-    python NYC_Subway_planner-2.py
+## Algorithm Details
 
+| Property | Value |
+|---|---|
+| Search method | A* |
+| Heuristic | Scaled Manhattan distance (admissible) |
+| Complete | Yes |
+| Optimal | Yes |
+| Time complexity | O(b^d) where b = branching factor, d = depth |
 
-USAGE
------
-1. The program displays available subway stations
-2. Enter a starting station (case-sensitive)
-3. Enter a destination station
-4. The program displays the optimal route, total travel time, and search stats
-5. Enter 'quit' to exit
+## Extension Points
 
+- Replace normalized coordinates with real lat/lon for geographic accuracy
+- Add time-of-day edge weights for peak vs. off-peak modeling
+- Extend to multi-modal routing (subway + bus + walking)
 
-TESTING EXAMPLES
-----------------
+## License
 
-Test Case 1: Simple Route
-  Start: Bronx → Goal: Harlem
-  Expected: Direct route, 20 minutes
+GNU Affero General Public License v3.0 (AGPL v3)
 
-Test Case 2: Multi-hop Route
-  Start: Bronx → Goal: NJ
-  Expected: Multi-station path, A* selecting optimal route among alternatives
-
-Test Case 3: Route with Alternatives
-  Start: City College → Goal: Penn Station
-  Expected: A* evaluating direct vs. indirect routes
-
-Test Case 4: Longer Journey
-  Start: Bronx → Goal: Newark
-  Expected: Longer path demonstrating multi-hop exploration
-
-Test Case 5: Adjacent Stations
-  Start: Penn Station → Goal: NJ
-  Expected: Direct single hop, 5 minutes
-
-
-NETWORK STRUCTURE
------------------
-Stations: Bronx, Harlem, City College, West 4th St, Union Square,
-          Penn Station, Newark, NJ
-
-Connections with travel times ranging 5-40 minutes.
-
-
-ALGORITHM DETAILS
------------------
-Search Method: A* (A-star)
-Heuristic:     Manhattan distance scaled to time estimate (admissible)
-Properties:    Complete, Optimal, Informed
-
-f(n) = g(n) + h(n)
-- g(n): actual cost from start to node n
-- h(n): Manhattan distance estimate to goal, scaled so it never overestimates
-- f(n): estimated total path cost through n
-
-
-CODE STRUCTURE
---------------
-SubwayRoutePlanner class:
-- _build_network()      Build weighted graph of stations and travel times
-- _set_coordinates()    Set normalized positions for heuristic calculation
-- heuristic()           Manhattan distance estimate to goal
-- a_star_search()       Main A* implementation with priority queue
-- _reconstruct_path()   Trace came_from dict back to start
-- display_route()       Print path, total time, and search statistics
-
-
-MODIFICATIONS
--------------
-- Add stations: edit _build_network() with new edges
-- Change heuristic: modify heuristic() method
-- Add real coordinates: update _set_coordinates() with actual lat/lon
-- Add other algorithms: follow the same structure as a_star_search()
-
-
-REFERENCES
-----------
-Russell, S., & Norvig, P. (2020). Artificial Intelligence: A Modern Approach (4th ed.). Pearson.
+For commercial licensing: volts-beret0t@icloud.com
