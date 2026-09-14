@@ -28,12 +28,12 @@ For a routing problem where both correctness and efficiency matter, A* is the ri
 The heuristic h(n) is a scaled Manhattan distance between station coordinates:
 
 ```
-h(n) = manhattan_distance(n, goal) * 0.3
+h(n) = manhattan_distance(n, goal) * 0.1
 ```
 
 A heuristic is **admissible** if it never overestimates the true cost to reach the goal. Because A* with an admissible heuristic is guaranteed to return an optimal path, admissibility is the property the scaling factor is meant to secure.
 
-With the current factor of 0.3 it does not hold everywhere: for the 10 ordered pairs that involve NJ, the estimate exceeds the true shortest travel time (for example Penn Station to NJ estimates 15 minutes against a 5 minute edge). `tests/test_astar.py` checks every pair and fails on those 10. On this small network A* still returns the same cost as Dijkstra for every pair, because the implementation re-pushes a node whenever a cheaper path to it is found, but that outcome is not guaranteed by the theory once the heuristic overestimates.
+The factor is derived rather than guessed: over all 64 ordered station pairs, the smallest ratio of true shortest travel time to Manhattan distance is 5/50 = 0.1, for Penn Station to NJ. Any scale at or below 0.1 is admissible on this network, and 0.1 is the tightest such choice, so it prunes the most while keeping the optimality guarantee. An earlier version used 0.3, which overestimated on the 10 pairs involving NJ; `tests/test_astar.py` now checks every pair.
 
 For a real deployment with actual geographic coordinates, the scaling factor would be derived from the ratio of physical distance to average travel time across the network.
 
@@ -43,7 +43,7 @@ A* on a finite graph with an admissible heuristic is:
 - **Complete**: guaranteed to find a path if one exists
 - **Optimal**: guaranteed to return the minimum-cost path
 
-As noted above, the optimality guarantee depends on admissibility, which the current heuristic does not fully satisfy on this network.
+The optimality guarantee depends on admissibility, which the derivation above secures for this network and the test suite enforces.
 
 The implementation uses a min-heap priority queue ordered by f(n) = g(n) + h(n), a `came_from` dictionary for path reconstruction, and a `g_cost` dictionary that updates when a shorter path to a node is found. A tie-breaking counter ensures stable ordering when f-costs are equal.
 

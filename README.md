@@ -4,9 +4,9 @@ An interactive Python implementation of A* search applied to subway routing in a
 
 ## Overview
 
-Given a weighted graph of stations connected by lines with travel times, A* searches for the lowest-cost route by balancing actual cost incurred (`g(n)`) against a heuristic estimate of remaining cost (`h(n)`). The heuristic is a scaled Manhattan distance between hand-assigned station coordinates (`manhattan_distance * 0.3`).
+Given a weighted graph of stations connected by lines with travel times, A* searches for the lowest-cost route by balancing actual cost incurred (`g(n)`) against a heuristic estimate of remaining cost (`h(n)`). The heuristic is a scaled Manhattan distance between hand-assigned station coordinates (`manhattan_distance * 0.1`).
 
-The heuristic is intended to be admissible, but with the current scale factor it is not: for 10 of the 64 ordered station pairs (every pair that involves NJ) `h(n)` exceeds the true shortest travel time. The test suite checks this and currently fails on those pairs. On this particular network A* still returns the same cost as Dijkstra for every pair, which the tests also verify, but that result is not guaranteed by admissibility as things stand. See the Tests section.
+The heuristic is admissible on this network by construction: the scale factor 0.1 is the largest value such that `h(n)` never exceeds the true shortest travel time for any of the 64 ordered station pairs. The binding pair is Penn Station to NJ, a 5 minute edge spanning 50 coordinate units. An earlier version used 0.3, which overestimated on the 10 pairs involving NJ; the test suite now checks every pair so a coordinate or scale change that breaks admissibility fails CI.
 
 ## Network
 
@@ -87,7 +87,7 @@ Search Statistics:
 | Property | Value |
 |---|---|
 | Search method | A* with a min-heap frontier; nodes are re-pushed when a cheaper `g(n)` is found |
-| Heuristic | Manhattan distance between station coordinates, scaled by 0.3 (overestimates for pairs involving NJ) |
+| Heuristic | Manhattan distance between station coordinates, scaled by 0.1 (largest admissible scale on this network) |
 | Complete | Yes (finite graph) |
 | Optimal | Matches Dijkstra on every pair in this network (tested), but the heuristic does not guarantee it |
 | Time complexity | O(b^d) where b = branching factor, d = depth |
@@ -99,7 +99,7 @@ pip install -r requirements.txt pytest
 pytest -q
 ```
 
-The suite checks three things for every ordered station pair: A* returns the same cost as `networkx` Dijkstra, the heuristic never exceeds the true cost, and a same-station query returns a zero-cost single-node path. The admissibility check currently fails for the 10 pairs involving NJ, which is a defect in the heuristic scale factor, not in the test.
+The suite checks three things for every ordered station pair: A* returns the same cost as `networkx` Dijkstra, the heuristic never exceeds the true cost, and a same-station query returns a zero-cost single-node path.
 
 ## Extension Points
 

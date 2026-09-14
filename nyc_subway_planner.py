@@ -22,6 +22,11 @@ import networkx as nx
 from typing import Dict, List, Tuple, Optional
 
 
+
+# Minutes per coordinate unit. 0.1 is the tightest admissible scale on this
+# network; see heuristic() for the derivation.
+HEURISTIC_SCALE = 0.1
+
 class SubwayRoutePlanner:
     """
     A subway route planner using A* search algorithm.
@@ -76,10 +81,12 @@ class SubwayRoutePlanner:
         """
         Calculate heuristic estimate from node to goal.
         
-        Uses Manhattan distance between station coordinates, scaled by 0.3.
-        Intended to be admissible (never overestimate). With the current
-        coordinates and scale factor it overestimates for pairs involving NJ;
-        tests/test_astar.py checks every pair.
+        Uses Manhattan distance between station coordinates, scaled by
+        HEURISTIC_SCALE minutes per coordinate unit. The scale is the
+        largest value that keeps the heuristic admissible (never
+        overestimating) on this network: the binding pair is Penn Station
+        to NJ, a 5 minute edge spanning 50 coordinate units, so 5/50 = 0.1.
+        tests/test_astar.py checks admissibility for every ordered pair.
         
         Args:
             node: Current station
@@ -97,8 +104,8 @@ class SubwayRoutePlanner:
         # Manhattan distance
         manhattan_dist = abs(x1 - x2) + abs(y1 - y2)
         
-        # Convert to time estimate (0.3 minutes per unit of distance)
-        estimated_time = manhattan_dist * 0.3
+        # Convert to time estimate (minutes per unit of distance)
+        estimated_time = manhattan_dist * HEURISTIC_SCALE
         
         return estimated_time
     
