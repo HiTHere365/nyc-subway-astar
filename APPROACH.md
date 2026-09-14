@@ -31,7 +31,9 @@ The heuristic h(n) is a scaled Manhattan distance between station coordinates:
 h(n) = manhattan_distance(n, goal) * 0.3
 ```
 
-A heuristic is **admissible** if it never overestimates the true cost to reach the goal. The scaling factor (0.3) is calibrated so that the distance estimate is always less than or equal to actual travel time along any real path through the graph. Because A* with an admissible heuristic is guaranteed to return an optimal path, admissibility is a hard requirement here.
+A heuristic is **admissible** if it never overestimates the true cost to reach the goal. Because A* with an admissible heuristic is guaranteed to return an optimal path, admissibility is the property the scaling factor is meant to secure.
+
+With the current factor of 0.3 it does not hold everywhere: for the 10 ordered pairs that involve NJ, the estimate exceeds the true shortest travel time (for example Penn Station to NJ estimates 15 minutes against a 5 minute edge). `tests/test_astar.py` checks every pair and fails on those 10. On this small network A* still returns the same cost as Dijkstra for every pair, because the implementation re-pushes a node whenever a cheaper path to it is found, but that outcome is not guaranteed by the theory once the heuristic overestimates.
 
 For a real deployment with actual geographic coordinates, the scaling factor would be derived from the ratio of physical distance to average travel time across the network.
 
@@ -40,6 +42,8 @@ For a real deployment with actual geographic coordinates, the scaling factor wou
 A* on a finite graph with an admissible heuristic is:
 - **Complete**: guaranteed to find a path if one exists
 - **Optimal**: guaranteed to return the minimum-cost path
+
+As noted above, the optimality guarantee depends on admissibility, which the current heuristic does not fully satisfy on this network.
 
 The implementation uses a min-heap priority queue ordered by f(n) = g(n) + h(n), a `came_from` dictionary for path reconstruction, and a `g_cost` dictionary that updates when a shorter path to a node is found. A tie-breaking counter ensures stable ordering when f-costs are equal.
 

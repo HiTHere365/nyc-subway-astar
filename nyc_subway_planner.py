@@ -76,10 +76,10 @@ class SubwayRoutePlanner:
         """
         Calculate heuristic estimate from node to goal.
         
-        Uses Manhattan distance scaled by average speed.
-        This heuristic is admissible (never overestimates) because:
-        - It assumes direct travel at maximum possible speed
-        - Actual route must follow edges, which cannot be shorter
+        Uses Manhattan distance between station coordinates, scaled by 0.3.
+        Intended to be admissible (never overestimate). With the current
+        coordinates and scale factor it overestimates for pairs involving NJ;
+        tests/test_astar.py checks every pair.
         
         Args:
             node: Current station
@@ -97,8 +97,7 @@ class SubwayRoutePlanner:
         # Manhattan distance
         manhattan_dist = abs(x1 - x2) + abs(y1 - y2)
         
-        # Convert to time estimate (assume 2 units of distance = 1 minute)
-        # This is calibrated to never overestimate actual travel time
+        # Convert to time estimate (0.3 minutes per unit of distance)
         estimated_time = manhattan_dist * 0.3
         
         return estimated_time
@@ -247,7 +246,7 @@ def main():
                 print(f"\nNo route found from '{start}' to '{goal}'.")
                 print("Please check that both stations exist in the network.\n")
         
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print("\n\nExiting...")
             break
         except Exception as e:
