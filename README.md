@@ -109,6 +109,8 @@ The suite checks three things for every ordered station pair: A* returns the sam
 
 ## License
 
-GNU Affero General Public License v3.0 (AGPL v3)
+GNU Affero General Public License v3.0 (AGPL v3). See [LICENSE](LICENSE).
+
+Copyright (C) 2026 William Rogers.
 
 For commercial licensing: volts-beret0t@icloud.com
