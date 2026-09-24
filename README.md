@@ -89,7 +89,7 @@ Search Statistics:
 | Search method | A* with a min-heap frontier; nodes are re-pushed when a cheaper `g(n)` is found |
 | Heuristic | Manhattan distance between station coordinates, scaled by 0.1 (largest admissible scale on this network) |
 | Complete | Yes (finite graph) |
-| Optimal | Matches Dijkstra on every pair in this network (tested), but the heuristic does not guarantee it |
+| Optimal | Yes on this network: the heuristic is admissible and consistent, and the tests match Dijkstra on every ordered pair |
 | Time complexity | O(b^d) where b = branching factor, d = depth |
 
 ## Tests
